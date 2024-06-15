@@ -1,0 +1,3 @@
+C:/Users/igorf/Documents/Programação/EntregaVacina/EntregaDeVacinas/cmake-build-debug/CMakeFiles/EntregaDeVacinas.dir
+C:/Users/igorf/Documents/Programação/EntregaVacina/EntregaDeVacinas/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/igorf/Documents/Programação/EntregaVacina/EntregaDeVacinas/cmake-build-debug/CMakeFiles/rebuild_cache.dir
