@@ -1,39 +1,50 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
 
 int **dist = NULL; // Matriz de distâncias (int)
+bool *visitada = NULL; // Array de cidades visitada
 
-void permute(int path[], int start, int n, int *min_cost, int best_path[], int current_cost) {
-    if (start == n) {
-        int final_cost = current_cost + dist[path[n - 1]][path[0]]; // Custo final incluindo retorno à cidade inicial
-        if (final_cost < *min_cost) {
-            *min_cost = final_cost;
+
+
+// Função para encontrar a cidade mais próxima não visitada
+int encontraCidade(int cidadeAtual, int n);
+
+// Algoritmo do Vizinho Mais Próximo
+void cidadeProxima(int cidadeInicial, int n, int *path, int *distTotal, int nivel);
+
+
+void permutar(int path[], int inicio, int n, int *distTotal, int bestPath[], int custoAtual) {
+    if (inicio == n) {
+        int custoFinal = custoAtual + dist[path[n - 1]][path[0]]; // Custo final incluindo retorno à cidade inicial
+        if (custoFinal < *distTotal) {
+            *distTotal = custoFinal;
             for (int i = 0; i < n; i++) {
-                best_path[i] = path[i];
+                bestPath[i] = path[i];
             }
         }
         return;
     }
 
-    for (int i = start; i < n; i++) {
+    for (int i = inicio; i < n; i++) {
         // Trocar
-        int temp = path[start];
-        path[start] = path[i];
+        int temp = path[inicio];
+        path[inicio] = path[i];
         path[i] = temp;
 
         // Calcular o novo custo parcial
-        int new_cost = current_cost + dist[path[start - 1]][path[start]];
+        int novoCusto = custoAtual + dist[path[inicio - 1]][path[inicio]];
 
         // Se o custo parcial for menor que o custo mínimo atual, continuar a permutação
-        if (new_cost < *min_cost) {
-            permute(path, start + 1, n, min_cost, best_path, new_cost);
+        if (novoCusto < *distTotal) {
+            permutar(path, inicio + 1, n, distTotal, bestPath, novoCusto);
         }
 
         // Desfazer a troca
-        temp = path[start];
-        path[start] = path[i];
+        temp = path[inicio];
+        path[inicio] = path[i];
         path[i] = temp;
     }
 }
@@ -59,7 +70,7 @@ int main(){
 
     FILE *file;
 
-    file = fopen("../casos/br-para.xls - Distancia (quilometros).csv", "r");
+    file = fopen("../casos/br-maranhao Distancia (quilometros).csv", "r");
 
     if (file == NULL) {
         perror("Error opening file");
@@ -117,23 +128,61 @@ int main(){
     fclose(file);
 
     int path[n+1]; // Caminho a ser percorrido, +1 para incluir retorno à cidade inicial
-    for (int i = 0; i < n; i++) { // Preenche o vetor com números diferentes entre si
-        path[i] = i;
+
+
+    int distParcial = 0;
+    visitada = (bool*)malloc(sizeof(bool) * n);
+
+    for (int i = 0; i < n; i++) {
+        visitada[i] = false; // Inicializa todas as cidades como não visitada
     }
-
-    int distTotal = INT_MAX;
-
     int best_path[n];
 
-    permute(path, 1, n, &distTotal, best_path, 0);
+    cidadeProxima(0, n, path, &distParcial,0); // Começa pela cidade 0
+
+    printf("%d \n", distParcial);
+    int distTotal = distParcial;
+    for (int i = 0; i < n; i++) {
+        path[i] = i;
+    }
+    permutar(path, 1, n, &distTotal, best_path, 0);
 
     printf("Distancia total: %d\n", distTotal);
     printf("Caminho: ");
     for (int i = 0; i <= n; i++) {
-        printf("%s ", cidades[cidades[path[i]].id].nome);
+        printf("%s ", cidades[path[i]].nome);
     }
     printf("\n");
 
     return 0;
 
+}
+
+int encontraCidade(int cidadeAtual, int n) {
+    int cidadeMaisProxima = -1;
+    int minDist = __INT_MAX__;
+
+    for (int i = 0; i < n; i++) {
+        if (!visitada[i] && dist[cidadeAtual][i] < minDist) {
+            cidadeMaisProxima = i;
+            minDist = dist[cidadeAtual][i];
+        }
+    }
+
+    return cidadeMaisProxima;
+}
+
+void cidadeProxima(int cidadeAtual, int n, int *path, int *distTotal, int nivel) {
+    path[nivel] = cidadeAtual;
+    visitada[cidadeAtual] = true;
+
+    int proxCidade = encontraCidade(cidadeAtual, n);
+    if (proxCidade == -1) {
+        *distTotal += dist[cidadeAtual][path[0]]; // Retorna à cidade inicial
+        path[nivel + 1] = path[0]; // Completa o ciclo
+        return;
+    }
+
+    *distTotal += dist[cidadeAtual][proxCidade];
+    cidadeProxima(proxCidade, n, path, distTotal, nivel + 1);
 }
