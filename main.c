@@ -12,93 +12,63 @@ typedef struct cidades{
     char nome[25];
 } Cidades;
 
+// Função para ler o arquivo
+int lerArquivo(FILE *file, Cidades* cidades, int n);
+
 // Função para encontrar a cidade mais próxima não visitada
 int encontraCidade(int cidadeAtual, int n);
 
 // Algoritmo do Vizinho Mais Próximo
-void cidadeProxima(int cidadeInicial, int n, int *path, int *distTotal, int nivel);
+void cidadeProxima(int cidadeAtual, int n, int *path, int *distTotal, int nivel);
 
 
 void permutar(int path[], int inicio, int n, int *distTotal, int bestPath[], int custoAtual);
 
 
-void criarArquivo(Cidades* cidades, int tamanho, int *bestPath, int distancia);
+int criarArquivo(Cidades* cidades, int tamanho, int *bestPath, int distancia);
 
 
 
 int main(){
 
-    char S[512]; // String que receberá a linha lida pelo fgets()
-    char *ptr; // Ponteiro que assumirá sunção de token para o strtok()
-    int linha = 0; // A linha da cidade atual
-    int n; // Quantidade de cidades = tamanho da matriz
-
-    printf("Entre com o número de cidades: ");
-    scanf("%d", &n);
-
+    int caso;
+    int n;
+    char arquivoName[50];
+    FILE *file;
     Cidades* cidades;
 
-    FILE *file;
+    printf("Digit o numero do caso desejado:\n Modelo simples: 1\n Modelo do Maranhao: 2\n Modelo do Para: 3\n Inserir um diretorio diferente: 4\n");
+    scanf("%d",&caso);
 
-    file = fopen("../casos/br-maranhao Distancia (quilometros).csv", "r");
-
-    if (file == NULL) {
-        perror("Error opening file");
-        return EXIT_FAILURE;
+    switch (caso) {
+        case 1:
+            file = fopen("../casos/modelo_simples.csv", "r");
+            n = 5;         // A linha da cidade atual
+            break;
+        case 2:
+            file = fopen("../casos/br-maranhao.xlsx_-_Distancia_quilometros.csv", "r");
+            n = 15;         // A linha da cidade atual
+            break;
+        case 3:
+            file = fopen("../casos/br-para-Distancia_quilometros.csv", "r");
+            n = 15;         // A linha da cidade atual
+            break;
+        case 4:
+            printf("Digite o endereço do arquivo que deseja\n");
+            scanf("%s", arquivoName);
+            file = fopen(arquivoName,"r");
+            printf("Digite o tamanho da matriz\n");
+            scanf("%d",&n);
+            break;
     }
 
-    cidades = (Cidades*)malloc(sizeof(Cidades)*n);
-
-
-    while (fgets(S, sizeof(S), file)) { // Pega cada linha do arquivo
-        static int flag_linha = 0; // Flag que indica a leitura da linha do nome das cidades
-
-        if (flag_linha == 0){ // Leitura do nome das cidade (string)
-
-            S[strcspn(S, "\n")] = '\0'; // Remove o \n de fim de linha
-
-            ptr = strtok(S, ",");
-            ptr = strtok(NULL, ","); // Pula a primeira coluna
-
-            for (int k = 0; ptr != NULL; k++) { // Itera sobre cada palavra da LINHA (string)
-                strcpy(cidades[k].nome, ptr);
-                cidades[k].id = k;
-
-                printf("%s ", cidades[k].nome);
-                ptr = strtok(NULL, ",");
-                // n++;
-            }
-            printf("\n");
-            flag_linha = 1; // Linha das cidades lida
-
-            dist = (int**)malloc(sizeof(int*)*n); // Define o tamanho da matriz de distancias (int)
-
-            for(int i = 0; i < n; i++){ // Define o tamanho dos vetores da matriz (int)
-                dist[i] = (int*)malloc(sizeof(int)*n);
-            }
-        }
-        else{ // Leitura das distâncias (int)
-
-            S[strcspn(S, "\n")] = '\0';
-
-            ptr = strtok(S, ",");
-            ptr = strtok(NULL, ",");
-
-            for (int j = 0; ptr != NULL; j++) {
-                dist[linha][j] = atoi(ptr);
-                printf("%d ", dist[linha][j]);
-                ptr = strtok(NULL, ",");
-            }
-            printf("\n");
-            linha++;
-
-        }
-    }
-    printf("Tamanho: %d\n\n", n);
-    fclose(file);
+    lerArquivo(file, cidades, n);
+//    if((lerArquivo(file, cidades, n))==EXIT_FAILURE){
+//        perror("Error opening file");
+//        return EXIT_FAILURE;
+//    }
 
     int path[n+1]; // Caminho a ser percorrido, +1 para incluir retorno à cidade inicial
-
 
     int distParcial = 0;
     visitada = (bool*)malloc(sizeof(bool) * n);
@@ -136,6 +106,67 @@ int main(){
 
 }
 
+int lerArquivo(FILE *file, Cidades* cidades, int n){
+
+    char S[512];          // String que receberá a linha lida pelo fgets()
+    char *ptr;           // Ponteiro que assumirá sunção de token para o strtok()
+    int linha = 0;    // Quantidade de cidades = tamanho da matriz
+
+    if (file == NULL) {
+        perror("Error opening file");
+        return EXIT_FAILURE;
+    }
+
+    cidades = (Cidades*)malloc(sizeof(Cidades)*n);
+
+    while (fgets(S, sizeof(S), file)) {     // Pega cada linha do arquivo
+        static int flag_linha = 0;                       // Flag que indica a leitura da linha do nome das cidades
+
+        if (flag_linha == 0){                           // Leitura do nome das cidade (string)
+
+            S[strcspn(S, "\n")] = '\0';     // Remove o \n de fim de linha
+
+            ptr = strtok(S, ",");
+            ptr = strtok(NULL, ",");        // Pula a primeira coluna
+
+            for (int k = 0; ptr != NULL; k++) {         // Itera sobre cada palavra da LINHA (string)
+                strcpy(cidades[k].nome, ptr);
+                cidades[k].id = k;
+
+                printf("%s ", cidades[k].nome);
+                ptr = strtok(NULL, ",");
+                // n++;
+            }
+            printf("\n");
+            flag_linha = 1;                               // Linha das cidades lida
+
+            dist = (int**)malloc(sizeof(int*)*n);   // Define o tamanho da matriz de distancias (int)
+
+            for(int i = 0; i < n; i++){                 // Define o tamanho dos vetores da matriz (int)
+                dist[i] = (int*)malloc(sizeof(int)*n);
+            }
+        }
+        else{               // Leitura das distâncias (int)
+
+            S[strcspn(S, "\n")] = '\0';
+
+            ptr = strtok(S, ",");
+            ptr = strtok(NULL, ",");
+
+            for (int j = 0; ptr != NULL; j++) {
+                dist[linha][j] = atoi(ptr);
+                printf("%d ", dist[linha][j]);
+                ptr = strtok(NULL, ",");
+            }
+            printf("\n");
+            linha++;
+
+        }
+    }
+    fclose(file);
+    printf("Tamanho: %d\n\n", n);
+}
+
 int encontraCidade(int cidadeAtual, int n) {
     int cidadeMaisProxima = -1;
     int minDist = __INT_MAX__;
@@ -146,7 +177,6 @@ int encontraCidade(int cidadeAtual, int n) {
             minDist = dist[cidadeAtual][i];
         }
     }
-
     return cidadeMaisProxima;
 }
 
@@ -198,7 +228,7 @@ void permutar(int path[], int inicio, int n, int *distTotal, int bestPath[], int
     }
 }
 
-void criarArquivo(Cidades* cidades, int tamanho, int *bestPath, int distancia){
+int criarArquivo(Cidades* cidades, int tamanho, int *bestPath, int distancia){
     const char *filename = "resultado.txt";
     FILE *resultado = fopen(filename, "w");
 
@@ -206,8 +236,6 @@ void criarArquivo(Cidades* cidades, int tamanho, int *bestPath, int distancia){
         perror("Erro ao criar o arquivo de resultado%s\n");
         return EXIT_FAILURE;
     }
-
-    
 
     char string[25];
 
