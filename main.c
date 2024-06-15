@@ -7,7 +7,10 @@
 int **dist = NULL; // Matriz de distâncias (int)
 bool *visitada = NULL; // Array de cidades visitada
 
-
+typedef struct cidades{
+    int id;
+    char nome[25];
+} Cidades;
 
 // Função para encontrar a cidade mais próxima não visitada
 int encontraCidade(int cidadeAtual, int n);
@@ -16,44 +19,12 @@ int encontraCidade(int cidadeAtual, int n);
 void cidadeProxima(int cidadeInicial, int n, int *path, int *distTotal, int nivel);
 
 
-void permutar(int path[], int inicio, int n, int *distTotal, int bestPath[], int custoAtual) {
-    if (inicio == n) {
-        int custoFinal = custoAtual + dist[path[n - 1]][path[0]]; // Custo final incluindo retorno à cidade inicial
-        if (custoFinal < *distTotal) {
-            *distTotal = custoFinal;
-            for (int i = 0; i < n; i++) {
-                bestPath[i] = path[i];
-            }
-        }
-        return;
-    }
-
-    for (int i = inicio; i < n; i++) {
-        // Trocar
-        int temp = path[inicio];
-        path[inicio] = path[i];
-        path[i] = temp;
-
-        // Calcular o novo custo parcial
-        int novoCusto = custoAtual + dist[path[inicio - 1]][path[inicio]];
-
-        // Se o custo parcial for menor que o custo mínimo atual, continuar a permutação
-        if (novoCusto < *distTotal) {
-            permutar(path, inicio + 1, n, distTotal, bestPath, novoCusto);
-        }
-
-        // Desfazer a troca
-        temp = path[inicio];
-        path[inicio] = path[i];
-        path[i] = temp;
-    }
-}
+void permutar(int path[], int inicio, int n, int *distTotal, int bestPath[], int custoAtual);
 
 
-typedef struct cidades{
-    int id;
-    char nome[25];
-} Cidades;
+void criarArquivo(Cidades* cidades, int tamanho, int *bestPath, int distancia);
+
+
 
 int main(){
 
@@ -66,7 +37,6 @@ int main(){
     scanf("%d", &n);
 
     Cidades* cidades;
-
 
     FILE *file;
 
@@ -136,7 +106,7 @@ int main(){
     for (int i = 0; i < n; i++) {
         visitada[i] = false; // Inicializa todas as cidades como não visitada
     }
-    int best_path[n];
+    int bestPath[n];
 
     cidadeProxima(0, n, path, &distParcial,0); // Começa pela cidade 0
 
@@ -145,14 +115,22 @@ int main(){
     for (int i = 0; i < n; i++) {
         path[i] = i;
     }
-    permutar(path, 1, n, &distTotal, best_path, 0);
+    permutar(path, 1, n, &distTotal, bestPath, 0);
 
     printf("Distancia total: %d\n", distTotal);
-    printf("Caminho: ");
+    printf("Caminho ótimo: ");
     for (int i = 0; i <= n; i++) {
-        printf("%s ", cidades[path[i]].nome);
+        printf("%s ", cidades[bestPath[i]].nome);
     }
     printf("\n");
+
+    printf("Caminho ótimo (id): ");
+    for (int i = 0; i <= n; i++) {
+        printf("%d ", cidades[bestPath[i]].id);
+    }
+    printf("\n");
+
+    criarArquivo(cidades, n, bestPath, distTotal);
 
     return 0;
 
@@ -185,4 +163,76 @@ void cidadeProxima(int cidadeAtual, int n, int *path, int *distTotal, int nivel)
 
     *distTotal += dist[cidadeAtual][proxCidade];
     cidadeProxima(proxCidade, n, path, distTotal, nivel + 1);
+}
+
+void permutar(int path[], int inicio, int n, int *distTotal, int bestPath[], int custoAtual){
+    if (inicio == n) {
+        int custoFinal = custoAtual + dist[path[n - 1]][path[0]]; // Custo final incluindo retorno à cidade inicial
+        if (custoFinal < *distTotal) {
+            *distTotal = custoFinal;
+            for (int i = 0; i < n; i++) {
+                bestPath[i] = path[i];
+            }
+        }
+        return;
+    }
+
+    for (int i = inicio; i < n; i++) {
+        // Trocar
+        int temp = path[inicio];
+        path[inicio] = path[i];
+        path[i] = temp;
+
+        // Calcular o novo custo parcial
+        int novoCusto = custoAtual + dist[path[inicio - 1]][path[inicio]];
+
+        // Se o custo parcial for menor que o custo mínimo atual, continuar a permutação
+        if (novoCusto < *distTotal) {
+            permutar(path, inicio + 1, n, distTotal, bestPath, novoCusto);
+        }
+
+        // Desfazer a troca
+        temp = path[inicio];
+        path[inicio] = path[i];
+        path[i] = temp;
+    }
+}
+
+void criarArquivo(Cidades* cidades, int tamanho, int *bestPath, int distancia){
+    const char *filename = "resultado.txt";
+    FILE *resultado = fopen(filename, "w");
+
+    if (resultado == NULL) {
+        perror("Erro ao criar o arquivo de resultado%s\n");
+        return EXIT_FAILURE;
+    }
+
+    
+
+    char string[25];
+
+    fprintf(resultado, "Caminho ótimo: "); // Caminho ótimo com o nome das cidades
+    for(int i = 0; i < tamanho; i++){
+        strcpy(string, cidades[bestPath[i]].nome);
+        fprintf(resultado, string);
+        fprintf(resultado, " => ");
+    }
+    fprintf(resultado, cidades[bestPath[0]].nome);
+
+    fprintf(resultado,"\n");
+
+    char id[5];
+
+    fprintf(resultado, "Caminho ótimo (id): ");
+    for(int i = 0; i < tamanho; i++){
+        itoa(cidades[bestPath[i]].id, id, 10);
+        fprintf(resultado, id);
+        fprintf(resultado, " => ");
+    }
+    itoa(cidades[bestPath[0]].id, id, 10);
+    fprintf(resultado, id);
+
+    fprintf(resultado,"\n");
+
+    fprintf(resultado, "Distância ótima: %d", distancia);
 }
