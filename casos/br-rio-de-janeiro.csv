@@ -1,0 +1,16 @@
+Distância (quilômetros),Rio de Janeiro,Nova Iguaçu,Duque de Caxias,Belford Roxo,São João de Meriti,Campos dos Goytacazes,Petrópolis,Volta Redonda,Magé,Itaboraí,Mesquita,Barra Mansa,Angra dos Reis,Nova Friburgo,Nilópolis
+Rio de Janeiro,0,30,17,26,20,232,44,101,33,40,27,107,114,99,24
+Nova Iguaçu,30,0,15,5,9,245,38,72,43,61,3,78,93,108,7
+Duque de Caxias,17,15,0,10,7,234,32,87,31,47,12,93,106,98,11
+Belford Roxo,26,5,10,0,5,241,35,77,39,56,3,83,97,105,5
+São João de Meriti,20,9,7,5,0,240,37,81,37,53,6,87,99,104,4
+Campos dos Goytacazes,232,245,234,241,240,0,210,298,203,192,244,305,337,137,244
+Petrópolis,44,38,32,35,37,210,0,94,22,43,38,101,127,73,39
+Volta Redonda,101,72,87,77,81,298,94,0,110,131,75,7,58,164,78
+Magé,33,43,31,39,37,203,22,110,0,22,42,117,136,67,41
+Itaboraí,40,61,47,56,53,192,43,131,22,0,59,137,152,62,58
+Mesquita,27,3,12,3,6,244,38,75,42,59,0,81,94,108,3
+Barra Mansa,107,78,93,83,87,305,101,7,117,137,81,0,54,171,83
+Angra dos Reis,114,93,106,97,99,337,127,58,136,152,94,54,0,200,95
+Nova Friburgo,99,108,98,105,104,137,73,164,67,62,108,171,200,0,108
+Nilópolis,24,7,11,5,4,244,39,78,41,58,3,83,95,108,0
