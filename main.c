@@ -40,8 +40,9 @@ int main(){
 
     /*  Mecanismo de escolha de caso  */
 
-    printf("Digit o numero do caso desejado:\n Modelo simples: 1\n Modelo do Maranhao: 2\n Modelo do Para: 3\n Inserir um diretorio diferente: 4\n");
+    printf("Casos:\n - Modelo simples: 1\n - Modelo do Maranhao: 2\n - Modelo do Para: 3\n - Inserir um diretorio diferente: 4\nDigite o caso desejado: ");
     scanf("%d",&caso);
+    printf("\n");
 
     switch (caso) {
         case 1:
@@ -57,10 +58,10 @@ int main(){
             n = 15;         // A linha da cidade atual
             break;
         case 4:
-            printf("Digite o endereço do arquivo que deseja\n");
+            printf("Digite o endereço do arquivo que deseja:\n");
             scanf("%s", arquivoName);
             file = fopen(arquivoName,"r");
-            printf("Digite o tamanho da matriz\n");
+            printf("Digite o tamanho da matriz:\n");
             scanf("%d",&n);
             break;
     }

@@ -1,3 +1,0 @@
-Caminho ótimo: São Luís => Paço do Lumiar => São José de Ribamar => Tutóia => Timon => Caxias => Codó => Barra do Corda => Balsas => Imperatriz => Açailândia => Buriticupu => Santa Luzia => Santa Inês => Bacabal => São Luís
-Caminho ótimo (id): 0 => 4 => 8 => 14 => 3 => 2 => 6 => 9 => 11 => 1 => 5 => 13 => 10 => 12 => 7 => 0
-Distância ótima: 2597
