@@ -68,7 +68,10 @@ int main(){
 
     cidades = (Cidades*)malloc(sizeof(Cidades)*n); // Alocação dinâmica para o vetor cidades do tipo Cidades
 
-    lerArquivo(file, cidades, n); // Chama a função para ler os arquivos
+    if(lerArquivo(file, cidades, n) == EXIT_FAILURE){ // Chama a função para ler os arquivos
+        perror("Erro ao encontrar o arquivo");
+        return EXIT_FAILURE;
+    }
 
 
     int path[n+1]; // Caminho a ser percorrido, +1 para incluir retorno à cidade inicial
@@ -84,12 +87,15 @@ int main(){
 
     cidadeProxima(0, n, path, &distParcial,0); // Começa pela cidade 0
 
-    int distTotal = distParcial;
+    int distTotal = distParcial; // A variável de distância total recebe o resultado do Nearest Neighbor para servir de parâmetro comparativo para o resultado preciso
 
-    permutar(path, 1, n, &distTotal, bestPath, 0);// Inicia a permutação com o parãmetro de comparativo sendo o valor aproximado obtido pelo Nearest Neigbor
+    printf("Distancia aproximada: %d\n", distParcial); // Imprime o resultado do algoritmo Nearest Neighbor
+    permutar(path, 1, n, &distTotal, bestPath, 0);  // Inicia a permutação com o parâmetro de comparativo sendo o valor aproximado obtido pelo Nearest Neighbor
 
     /*  Impressão no terminal dos resultados */
-    printf("Distancia total: %d\n", distTotal);
+
+
+    printf("Distancia ótima: %d\n", distTotal);
     printf("Caminho ótimo: ");
     for (int i = 0; i <= n; i++) {
         printf("%s ", cidades[path[i]].nome);
@@ -104,35 +110,40 @@ int main(){
     printf("\n\n");
 
     /*  Mecanismo de escolha do salvamento do resultado em um arquivo txt  */
-    printf("Voce deseja salvar este resultado? (y/n) ");
+    printf("Voce deseja salvar este resultado? (y/n): ");
     char resposta[5];
 
     scanf("%s",resposta);
 
     if (!strcmp(resposta,"Y") || !strcmp(resposta,"y")){
         criarArquivo(cidades, n, path, distTotal);
-        return 0;
     }
-    else if(!strcmp(resposta,"N") || !strcmp(resposta,"n"))
-        return 0;
+    
+    for(int i=0;i<n;i++) free(dist[i]);
+    free(dist);
+    free(visitada);
+    free(cidades);
+
+
+    return 0;
 }
 
 int lerArquivo(FILE *file, Cidades* cidades, int n){
 
     char S[512];          // String que receberá a linha lida pelo fgets()
     char *ptr;           // Ponteiro que assumirá sunção de token para o strtok()
-    int linha = 0;    // Quantidade de cidades = tamanho da matriz
+    int linha = 0;      // Quantidade de cidades = tamanho da matriz
 
     if (file == NULL) {
-        return -1;
+        return EXIT_FAILURE;
     }
 
 
 
-    while (fgets(S, sizeof(S), file)) {     // Pega cada linha do arquivo
-        static int flag_linha = 0;                       // Flag que indica a leitura da linha do nome das cidades
+    while (fgets(S, sizeof(S), file)) {         // Pega cada linha do arquivo
+        static int flag_linha = 0;             // Flag que indica a leitura da linha do nome das cidades
 
-        if (flag_linha == 0){                           // Leitura do nome das cidade (string)
+        if (flag_linha == 0){                // Leitura do nome das cidade (string)
 
             S[strcspn(S, "\n")] = '\0';     // Remove o \n de fim de linha
 
@@ -148,9 +159,9 @@ int lerArquivo(FILE *file, Cidades* cidades, int n){
                 // n++;
             }
             printf("\n");
-            flag_linha = 1;                               // Linha das cidades lida
+            flag_linha = 1;                             // Linha das cidades lida
 
-            dist = (int**)malloc(sizeof(int*)*n);   // Define o tamanho da matriz de distancias (int)
+            dist = (int**)malloc(sizeof(int*)*n);       // Define o tamanho da matriz de distancias (int)
 
             for(int i = 0; i < n; i++){                 // Define o tamanho dos vetores da matriz (int)
                 dist[i] = (int*)malloc(sizeof(int)*n);
@@ -175,6 +186,8 @@ int lerArquivo(FILE *file, Cidades* cidades, int n){
     }
     fclose(file);
     printf("Tamanho: %d\n\n", n);
+
+    return 0;
 }
 
 int encontraCidade(int cidadeAtual, int n) {
@@ -239,13 +252,8 @@ void permutar(int path[], int inicio, int n, int *distTotal, int bestPath[], int
 }
 
 int criarArquivo(Cidades* cidades, int tamanho, int *bestPath, int distancia){
-    const char *filename = "../resultado.txt";
+    const char *filename = "./resultado.txt";
     FILE *resultado = fopen(filename, "w");
-
-    if (resultado == NULL) {
-        perror("Erro ao criar o arquivo de resultado%s\n");
-        return EXIT_FAILURE;
-    }
 
     char string[25];
 
@@ -273,4 +281,6 @@ int criarArquivo(Cidades* cidades, int tamanho, int *bestPath, int distancia){
     fprintf(resultado,"\n");
 
     fprintf(resultado, "Distância ótima: %d", distancia);
+
+    return 0;
 }
