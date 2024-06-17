@@ -90,6 +90,10 @@ int main(){
     int distTotal = distParcial; // A variável de distância total recebe o resultado do Nearest Neighbor para servir de parâmetro comparativo para o resultado preciso
 
     printf("Distancia aproximada: %d\n", distParcial); // Imprime o resultado do algoritmo Nearest Neighbor
+
+    printf("Calculando distância ideal...\n");
+
+    
     permutar(path, 1, n, &distTotal, bestPath, 0);  // Inicia a permutação com o parâmetro de comparativo sendo o valor aproximado obtido pelo Nearest Neighbor
 
     /*  Impressão no terminal dos resultados */
