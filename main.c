@@ -88,8 +88,8 @@ int main(){
     for (int i = 0; i < n; i++) {
         visitada[i] = false; // Inicializa todas as cidades como não visitada
     }
-    int bestPath[n];
 
+    
     cidadeProxima(0, n, path, &distParcial,0); // Começa pela cidade 0
 
     int distTotal = distParcial; // A variável de distância total recebe o resultado do Nearest Neighbor para servir de parâmetro comparativo para o resultado preciso
