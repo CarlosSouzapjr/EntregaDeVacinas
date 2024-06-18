@@ -21,7 +21,7 @@ Por fim, nosso código final consiste no Algoritmo Brute Force com Branch N Boun
 
 
 
-## 📃Instruções
+## 📃 Instruções
 
 Crie o diretório output
 
@@ -37,8 +37,8 @@ Compile o programa
 
 Inicie o arquivo main para rodar o código
 
-    ./main
-
+    ./main ou main.exe
+    
 ### Entradas
 Casos:
 
@@ -72,7 +72,7 @@ Logo depois temos o resultado do algoritmo do Nearest Neighbor, como um resultad
     Distancia ótima: 710
     Caminho ótimo: São Luís Cidade A Cidade B Cidade C Cidade D São Luís
     Caminho ótimo (id): 0 1 2 3 4 0
-## ℹInformações
+## ℹ Informações
 - Arquitetura utilizada: _windows x86_64_
 
 - Compilador: GCC
