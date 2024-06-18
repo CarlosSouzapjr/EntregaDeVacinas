@@ -22,7 +22,7 @@ int encontraCidade(int cidadeAtual, int n);
 void cidadeProxima(int cidadeAtual, int n, int *path, int *distTotal, int nivel);
 
 // Função para gerar todas as permutações do problema TSP (Algoritmo força bruta)
-void permutar(int path[], int inicio, int n, int *distTotal, int bestPath[], int custoAtual);
+void permutar(int path[], int inicio, int n, int *distTotal, int custoAtual);
 
 // Cria o arquivo "resultado.txt" que armazena o caminho ótimo
 int criarArquivo(Cidades* cidades, int tamanho, int *bestPath, int distancia);
@@ -68,8 +68,15 @@ int main(){
 
     cidades = (Cidades*)malloc(sizeof(Cidades)*n); // Alocação dinâmica para o vetor cidades do tipo Cidades
 
+    visitada = (bool*)malloc(sizeof(bool) * n);
+
+    if (visitada == NULL || cidades == NULL || n<1){
+        perror("Erro ao alocar memoria.");
+        return EXIT_FAILURE;
+    }
+
     if(lerArquivo(file, cidades, n) == EXIT_FAILURE){ // Chama a função para ler os arquivos
-        perror("Erro ao encontrar o arquivo");
+        perror("Erro ao encontrar o arquivo.");
         return EXIT_FAILURE;
     }
 
@@ -77,8 +84,6 @@ int main(){
     int path[n+1]; // Caminho a ser percorrido, +1 para incluir retorno à cidade inicial
 
     int distParcial = 0;
-
-    visitada = (bool*)malloc(sizeof(bool) * n);
 
     for (int i = 0; i < n; i++) {
         visitada[i] = false; // Inicializa todas as cidades como não visitada
@@ -93,8 +98,8 @@ int main(){
 
     printf("Calculando distância ideal...\n");
 
-    
-    permutar(path, 1, n, &distTotal, bestPath, 0);  // Inicia a permutação com o parâmetro de comparativo sendo o valor aproximado obtido pelo Nearest Neighbor
+
+    permutar(path, 1, n, &distTotal, 0);  // Inicia a permutação com o parâmetro de comparativo sendo o valor aproximado obtido pelo Nearest Neighbor
 
     /*  Impressão no terminal dos resultados */
 
@@ -122,7 +127,7 @@ int main(){
     if (!strcmp(resposta,"Y") || !strcmp(resposta,"y")){
         criarArquivo(cidades, n, path, distTotal);
     }
-    
+
     for(int i=0;i<n;i++) free(dist[i]);
     free(dist);
     free(visitada);
@@ -136,7 +141,7 @@ int lerArquivo(FILE *file, Cidades* cidades, int n){
 
     char S[512];          // String que receberá a linha lida pelo fgets()
     char *ptr;           // Ponteiro que assumirá sunção de token para o strtok()
-    int linha = 0;      // Quantidade de cidades = tamanho da matriz
+    int linha = 0;      // Indice de linha da matriz dist (matriz de inteiros)
 
     if (file == NULL) {
         return EXIT_FAILURE;
@@ -160,7 +165,7 @@ int lerArquivo(FILE *file, Cidades* cidades, int n){
 
                 printf("%s ", cidades[k].nome);
                 ptr = strtok(NULL, ",");
-                // n++;
+
             }
             printf("\n");
             flag_linha = 1;                             // Linha das cidades lida
@@ -222,14 +227,11 @@ void cidadeProxima(int cidadeAtual, int n, int *path, int *distTotal, int nivel)
     cidadeProxima(proxCidade, n, path, distTotal, nivel + 1);
 }
 
-void permutar(int path[], int inicio, int n, int *distTotal, int bestPath[], int custoAtual){
+void permutar(int path[], int inicio, int n, int *distTotal, int custoAtual){
     if (inicio == n) {
         int custoFinal = custoAtual + dist[path[n - 1]][path[0]]; // Custo final incluindo retorno à cidade inicial
         if (custoFinal < *distTotal) {
             *distTotal = custoFinal;
-            for (int i = 0; i < n; i++) {
-                bestPath[i] = path[i];
-            }
         }
         return;
     }
@@ -245,7 +247,7 @@ void permutar(int path[], int inicio, int n, int *distTotal, int bestPath[], int
 
         // Se o custo parcial for menor que o custo mínimo atual, continuar a permutação
         if (novoCusto < *distTotal) {
-            permutar(path, inicio + 1, n, distTotal, bestPath, novoCusto);
+            permutar(path, inicio + 1, n, distTotal, novoCusto);
         }
 
         // Desfazer a troca para testar as próximas permutações
@@ -271,16 +273,16 @@ int criarArquivo(Cidades* cidades, int tamanho, int *bestPath, int distancia){
 
     fprintf(resultado,"\n");
 
-    char id[5];
+    int id;
 
     fprintf(resultado, "Caminho ótimo (id): ");
     for(int i = 0; i < tamanho; i++){
-        itoa(cidades[bestPath[i]].id, id, 10);
-        fprintf(resultado, id);
+        id = cidades[bestPath[i]].id;
+        fprintf(resultado,"%d", id);
         fprintf(resultado, " => ");
     }
-    itoa(cidades[bestPath[0]].id, id, 10);
-    fprintf(resultado, id);
+    id = cidades[bestPath[0]].id;
+    fprintf(resultado, "%d", id);
 
     fprintf(resultado,"\n");
 
