@@ -22,7 +22,7 @@ int encontraCidade(int cidadeAtual, int n);
 void cidadeProxima(int cidadeAtual, int n, int *path, int *distTotal, int nivel);
 
 // Função para gerar todas as permutações do problema TSP (Algoritmo força bruta)
-void permutar(int path[], int inicio, int n, int *distTotal, int custoAtual);
+void permutar(int path[], int inicio, int n, int *bestPath, int *distTotal, int custoAtual);
 
 // Cria o arquivo "resultado.txt" que armazena o caminho ótimo
 int criarArquivo(Cidades* cidades, int tamanho, int *bestPath, int distancia);
@@ -89,7 +89,7 @@ int main(){
         visitada[i] = false; // Inicializa todas as cidades como não visitada
     }
 
-    
+
     cidadeProxima(0, n, path, &distParcial,0); // Começa pela cidade 0
 
     int distTotal = distParcial; // A variável de distância total recebe o resultado do Nearest Neighbor para servir de parâmetro comparativo para o resultado preciso
@@ -99,7 +99,9 @@ int main(){
     printf("Calculando distância ideal...\n");
 
 
-    permutar(path, 1, n, &distTotal, 0);  // Inicia a permutação com o parâmetro de comparativo sendo o valor aproximado obtido pelo Nearest Neighbor
+    int bestPath[n+1];
+
+    permutar(path, 1, n, bestPath, &distTotal, 0);  // Inicia a permutação com o parâmetro de comparativo sendo o valor aproximado obtido pelo Nearest Neighbor
 
     /*  Impressão no terminal dos resultados */
 
@@ -107,13 +109,13 @@ int main(){
     printf("Distancia ótima: %d\n", distTotal);
     printf("Caminho ótimo: ");
     for (int i = 0; i <= n; i++) {
-        printf("%s ", cidades[path[i]].nome);
+        printf("%s ", cidades[bestPath[i]].nome);
     }
     printf("\n");
 
     printf("Caminho ótimo (id): ");
     for (int i = 0; i <= n; i++) {
-        printf("%d ", cidades[path[i]].id);
+        printf("%d ", cidades[bestPath[i]].id);
     }
 
     printf("\n\n");
@@ -125,7 +127,7 @@ int main(){
     scanf("%s",resposta);
 
     if (!strcmp(resposta,"Y") || !strcmp(resposta,"y")){
-        criarArquivo(cidades, n, path, distTotal);
+        criarArquivo(cidades, n, bestPath, distTotal);
     }
 
     for(int i=0;i<n;i++) free(dist[i]);
@@ -227,11 +229,14 @@ void cidadeProxima(int cidadeAtual, int n, int *path, int *distTotal, int nivel)
     cidadeProxima(proxCidade, n, path, distTotal, nivel + 1);
 }
 
-void permutar(int path[], int inicio, int n, int *distTotal, int custoAtual){
+void permutar(int path[], int inicio, int n, int* bestPath, int *distTotal, int custoAtual){
     if (inicio == n) {
         int custoFinal = custoAtual + dist[path[n - 1]][path[0]]; // Custo final incluindo retorno à cidade inicial
         if (custoFinal < *distTotal) {
             *distTotal = custoFinal;
+            for(int i=0;i<=n;i++){
+            bestPath[i] = path[i];
+            }
         }
         return;
     }
@@ -247,7 +252,7 @@ void permutar(int path[], int inicio, int n, int *distTotal, int custoAtual){
 
         // Se o custo parcial for menor que o custo mínimo atual, continuar a permutação
         if (novoCusto < *distTotal) {
-            permutar(path, inicio + 1, n, distTotal, novoCusto);
+            permutar(path, inicio + 1, n, bestPath, distTotal, novoCusto);
         }
 
         // Desfazer a troca para testar as próximas permutações
