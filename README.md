@@ -68,10 +68,10 @@ Como saída, no terminal aparecerá a matriz importada junto com seu tamanho, po
 
 Logo depois temos o resultado do algoritmo do Nearest Neighbor, como um resultado aproximado, e o algoritmo de Brute Force com Branch N Bound, como resultado definitivo, junto com a sequência das cidades do caminho percorrido e seus ids.
 
-    Distancia aproximada: 800
-    Distancia ótima: 710
-    Caminho ótimo: São Luís Cidade A Cidade B Cidade C Cidade D São Luís
-    Caminho ótimo (id): 0 1 2 3 4 0
+    Caminho ótimo: São Luís => Cidade A => Cidade D => Cidade C => Cidade B => São Luís
+    Caminho ótimo (id): 0 => 1 => 4 => 3 => 2 => 0
+    Distância ótima: 710
+    
 ## ℹ Informações
 - Arquitetura utilizada: _windows x86_64_
 
