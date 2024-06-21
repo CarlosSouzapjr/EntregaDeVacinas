@@ -66,7 +66,7 @@ Como saída, no terminal aparecerá a matriz importada junto com seu tamanho, po
     Cidade D,250,130,210,170,0
     Tamanho: 5
 
-Logo depois temos o resultado do algoritmo do Nearest Neighbor, como um resultado aproximado, e o algoritmo de Brute Force com Branch N Bound, como resultado definitivo, junto com a sequência das cidades do caminho percorrido e seus ids.
+Logo depois temos o resultado do algoritmo do Nearest Neighbor, como um resultado aproximado, e do algoritmo de Brute Force com Branch N Bound, como resultado definitivo, junto com a sequência das cidades do caminho percorrido e seus ids.
 
     Caminho ótimo: São Luís => Cidade A => Cidade D => Cidade C => Cidade B => São Luís
     Caminho ótimo (id): 0 => 1 => 4 => 3 => 2 => 0
